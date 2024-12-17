@@ -9,11 +9,42 @@
 <body>
   <div class="container">
     <h1>Motivational Quote Generator</h1>
-    <div id="quote-box">
-      <p id="quote">Click the button to get inspired!</p>
+    
+    <!-- Tabs for navigation -->
+    <div class="tab-buttons">
+      <button id="generate-tab">Generate Quote</button>
+      <button id="submit-tab">Submit Quote</button>
+      <button id="view-tab">View Submitted Quotes</button>
     </div>
-    <button id="generate-quote">Generate Quote</button>
+
+    <!-- Quote Generator Section -->
+    <div id="generate-section">
+      <div id="quote-box">
+        <p id="quote">Click the button to get inspired!</p>
+      </div>
+      <button id="generate-quote">Generate Quote</button>
+    </div>
+
+    <!-- Quote Submission Section -->
+    <div id="submit-section" style="display: none;">
+      <h3>Submit Your Own Quote</h3>
+      <form id="submit-quote-form">
+        <textarea id="user-quote" rows="4" placeholder="Type your motivational quote here..."></textarea>
+        <button type="submit">Submit Quote</button>
+      </form>
+    </div>
+
+    <!-- View Submitted Quotes Section -->
+    <div id="view-section" style="display: none;">
+      <h3>Submitted Quotes</h3>
+      <div id="submitted-quotes">
+        <ul id="quote-list">
+          <!-- User-submitted quotes will appear here -->
+        </ul>
+      </div>
+    </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>

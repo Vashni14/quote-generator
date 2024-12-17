@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Parse JSON request bodies
 
 // MySQL Connection
 const db = mysql.createConnection({
@@ -25,6 +26,28 @@ app.get('/api/quote', (req, res) => {
   db.query(query, (err, result) => {
     if (err) throw err;
     res.json({ quote: result[0].text });
+  });
+});
+
+// API Endpoint to Submit a New Quote
+app.post('/api/submit', (req, res) => {
+  const { quote } = req.body;
+  const query = 'INSERT INTO user_quotes (quote) VALUES (?)';
+  db.query(query, [quote], (err, result) => {
+    if (err) {
+      res.json({ success: false });
+      throw err;
+    }
+    res.json({ success: true });
+  });
+});
+
+// API Endpoint to Get All Submitted Quotes
+app.get('/api/quotes', (req, res) => {
+  const query = 'SELECT * FROM user_quotes';
+  db.query(query, (err, result) => {
+    if (err) throw err;
+    res.json({ quotes: result });
   });
 });
 
