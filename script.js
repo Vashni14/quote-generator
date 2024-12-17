@@ -1,12 +1,19 @@
-document.getElementById('generate-quote').addEventListener('click', () => {
-    fetch('/api/quote')
-      .then(response => response.json())
-      .then(data => {
-        document.getElementById('quote').innerText = data.quote;
-      })
-      .catch(error => {
-        console.error('Error fetching quote:', error);
-        document.getElementById('quote').innerText = "Couldn't fetch a quote. Please try again!";
-      });
+// Wait for the DOM to fully load
+document.addEventListener('DOMContentLoaded', () => {
+    const generateButton = document.getElementById('generate-quote');
+    const quoteDisplay = document.getElementById('quote');
+  
+    // Add click event listener to the button
+    generateButton.addEventListener('click', () => {
+      fetch('http://localhost:5000/api/quote') // Use your backend URL
+        .then(response => response.json())
+        .then(data => {
+          quoteDisplay.innerText = data.quote; // Display the quote
+        })
+        .catch(error => {
+          console.error('Error fetching quote:', error);
+          quoteDisplay.innerText = "Couldn't fetch a quote. Please try again!";
+        });
+    });
   });
   
