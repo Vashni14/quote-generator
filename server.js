@@ -103,6 +103,48 @@ app.get('/api/favourites', (req, res) => {
     res.json({ favourites: results });
   });
 });
+// API Endpoint to Get Quote of the Day
+app.get('/api/quote-of-the-day', (req, res) => {
+    const today = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
+    
+    // Check if we have a cached quote for today
+    const query = `SELECT * FROM quote_of_the_day WHERE date = ?`;
+    db.query(query, [today], (err, result) => {
+      if (err) {
+        console.error('Error fetching quote of the day:', err);
+        return res.status(500).json({ error: 'Failed to fetch quote of the day' });
+      }
+  
+      // If the quote exists for today, send it
+      if (result.length > 0) {
+        return res.json({ quote: result[0].quote });
+      }
+  
+      // If not, pick a random quote from the quotes table and save it as the quote of the day
+      const randomQuoteQuery = 'SELECT * FROM quotes ORDER BY RAND() LIMIT 1';
+      db.query(randomQuoteQuery, (err, randomQuoteResult) => {
+        if (err) {
+          console.error('Error fetching random quote:', err);
+          return res.status(500).json({ error: 'Failed to fetch random quote' });
+        }
+  
+        const randomQuote = randomQuoteResult[0].text;
+        
+        // Insert the new quote as the quote of the day
+        const insertQuoteQuery = 'INSERT INTO quote_of_the_day (date, quote) VALUES (?, ?)';
+        db.query(insertQuoteQuery, [today, randomQuote], (err, insertResult) => {
+          if (err) {
+            console.error('Error inserting quote of the day:', err);
+            return res.status(500).json({ error: 'Failed to insert quote of the day' });
+          }
+          
+          res.json({ quote: randomQuote });
+        });
+      });
+    });
+  });
+  
+  
 
 // Start the Server
 const port = process.env.PORT || 8080;

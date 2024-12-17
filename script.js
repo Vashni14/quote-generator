@@ -12,10 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitTab = document.getElementById('submit-tab');
     const viewTab = document.getElementById('view-tab');
     const favouriteTab = document.getElementById('favourite-tab');
+    const quoteOfTheDayTab = document.getElementById('quote-of-the-day-tab'); // New Tab
     const generateSection = document.getElementById('generate-section');
     const submitSection = document.getElementById('submit-section');
     const viewSection = document.getElementById('view-section');
     const favouriteSection = document.getElementById('favourite-section');
+    const quoteOfTheDaySection = document.getElementById('quote-of-the-day-section'); // New Section
     
     // Switch tab visibility
     const switchTab = (activeSection) => {
@@ -23,8 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
       submitSection.style.display = activeSection === 'submit' ? 'block' : 'none';
       viewSection.style.display = activeSection === 'view' ? 'block' : 'none';
       favouriteSection.style.display = activeSection === 'favourite' ? 'block' : 'none';
+      quoteOfTheDaySection.style.display = activeSection === 'quote-of-the-day' ? 'block' : 'none'; // Show Quote of the Day section
     };
-  
+    
     generateTab.addEventListener('click', () => switchTab('generate'));
     submitTab.addEventListener('click', () => switchTab('submit'));
     viewTab.addEventListener('click', () => {
@@ -35,15 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
       switchTab('favourite');
       fetchFavouriteQuotes();
     });
+    quoteOfTheDayTab.addEventListener('click', () => {
+      switchTab('quote-of-the-day');
+      fetchQuoteOfTheDay(); // Fetch Quote of the Day
+    });
   
     // Fetch a random quote
     generateButton.addEventListener('click', () => {
-      fetch('http://localhost:8080/api/quote') // Use your backend URL
+      fetch('http://localhost:8080/api/quote')
         .then(response => response.json())
         .then(data => {
-          quoteDisplay.innerText = data.quote; // Display the quote
-          heartIcon.dataset.quoteId = data.id; // Store quote ID in heart icon
-          heartIcon.style.display = 'inline'; // Show the heart icon
+          quoteDisplay.innerText = data.quote;
+          heartIcon.dataset.quoteId = data.id;
+          heartIcon.style.display = 'inline';
         })
         .catch(error => {
           console.error('Error fetching quote:', error);
@@ -57,10 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (quoteId) {
         fetch('http://localhost:8080/api/favourite', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ quote_id: quoteId }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quote_id: quoteId })
         })
         .then(response => response.json())
         .then(data => {
@@ -84,10 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (newQuote) {
         fetch('http://localhost:8080/api/submit', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ quote: newQuote }),
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quote: newQuote })
         })
         .then(response => response.json())
         .then(data => {
@@ -137,6 +140,19 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
           console.error('Error fetching favourite quotes:', error);
+        });
+    };
+  
+    // Fetch the Quote of the Day
+    const fetchQuoteOfTheDay = () => {
+      fetch('http://localhost:8080/api/quote-of-the-day')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('quote-of-the-day-text').innerText = data.quote;
+        })
+        .catch(error => {
+          console.error('Error fetching quote of the day:', error);
+          document.getElementById('quote-of-the-day-text').innerText = "Couldn't fetch the Quote of the Day.";
         });
     };
   });
