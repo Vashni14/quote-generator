@@ -103,10 +103,10 @@ app.get('/api/favourites', (req, res) => {
     res.json({ favourites: results });
   });
 });
-// API Endpoint to Get Quote of the Day
+// API Endpoint to Get Quote of the Day with ID
 app.get('/api/quote-of-the-day', (req, res) => {
     const today = new Date().toISOString().split('T')[0]; // Current date in YYYY-MM-DD format
-    
+  
     // Check if we have a cached quote for today
     const query = `SELECT * FROM quote_of_the_day WHERE date = ?`;
     db.query(query, [today], (err, result) => {
@@ -117,7 +117,7 @@ app.get('/api/quote-of-the-day', (req, res) => {
   
       // If the quote exists for today, send it
       if (result.length > 0) {
-        return res.json({ quote: result[0].quote });
+        return res.json({ quote: result[0].quote, id: result[0].id });
       }
   
       // If not, pick a random quote from the quotes table and save it as the quote of the day
@@ -129,6 +129,7 @@ app.get('/api/quote-of-the-day', (req, res) => {
         }
   
         const randomQuote = randomQuoteResult[0].text;
+        const randomQuoteId = randomQuoteResult[0].id;
         
         // Insert the new quote as the quote of the day
         const insertQuoteQuery = 'INSERT INTO quote_of_the_day (date, quote) VALUES (?, ?)';
@@ -137,10 +138,30 @@ app.get('/api/quote-of-the-day', (req, res) => {
             console.error('Error inserting quote of the day:', err);
             return res.status(500).json({ error: 'Failed to insert quote of the day' });
           }
-          
-          res.json({ quote: randomQuote });
+  
+          res.json({ quote: randomQuote, id: randomQuoteId });
         });
       });
+    });
+  });
+  
+  // API Endpoint to Add Quote of the Day to Favourites
+  // API Endpoint to Add Quote of the Day to Favourites
+app.post('/api/favourite-quote-of-the-day', (req, res) => {
+    const { quote } = req.body;
+  
+    if (!quote) {
+      return res.status(400).json({ success: false, error: 'Quote text is required' });
+    }
+  
+    // You might need to store the quote of the day in a different table or with a flag for the day
+    const query = 'INSERT INTO favourites (quote_id) SELECT id FROM quotes WHERE text = ? LIMIT 1';
+    db.query(query, [quote], (err, result) => {
+      if (err) {
+        console.error('Error adding quote of the day to favourites:', err);
+        return res.status(500).json({ success: false, error: 'Failed to add quote to favourites' });
+      }
+      res.json({ success: true });
     });
   });
   

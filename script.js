@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const userQuoteInput = document.getElementById('user-quote');
     const quoteList = document.getElementById('quote-list');
     const favouriteList = document.getElementById('favourite-list');
-    
+    const heartIconQuoteOfTheDay = document.getElementById('heart-icon-quote-of-the-day');
     // Tabs
     const generateTab = document.getElementById('generate-tab');
     const submitTab = document.getElementById('submit-tab');
@@ -143,17 +143,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
   
-    // Fetch the Quote of the Day
     const fetchQuoteOfTheDay = () => {
-      fetch('http://localhost:8080/api/quote-of-the-day')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('quote-of-the-day-text').innerText = data.quote;
-        })
-        .catch(error => {
-          console.error('Error fetching quote of the day:', error);
-          document.getElementById('quote-of-the-day-text').innerText = "Couldn't fetch the Quote of the Day.";
-        });
-    };
+        fetch('http://localhost:8080/api/quote-of-the-day')
+          .then(response => response.json())
+          .then(data => {
+            document.getElementById('quote-of-the-day-text').innerText = data.quote;
+            const quoteId = data.id; // Get quote ID
+            heartIconQuoteOfTheDay.dataset.quoteId = quoteId;
+            heartIconQuoteOfTheDay.style.display = 'inline';
+      
+            // Display favoriting status
+            heartIconQuoteOfTheDay.style.color = data.isFavorited ? 'red' : 'black'; // Change color if already favorited
+          })
+          .catch(error => {
+            console.error('Error fetching quote of the day:', error);
+            document.getElementById('quote-of-the-day-text').innerText = "Couldn't fetch the Quote of the Day.";
+          });
+      };
+      // Add the quote of the day to favourites when heart icon is clicked
+      // Add the Quote of the Day to favourites when heart icon is clicked
+document.getElementById('heart-icon-quote-of-the-day').addEventListener('click', () => {
+    const quoteOfTheDayText = document.getElementById('quote-of-the-day-text').innerText;
+  
+    if (quoteOfTheDayText) {
+      fetch('http://localhost:8080/api/favourite-quote-of-the-day', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quote: quoteOfTheDayText })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+            
+          alert('Quote of the Day added to favourites!');
+        } else {
+          alert('Failed to add Quote of the Day to favourites.');
+        }
+      })
+      .catch(error => {
+        console.error('Error adding Quote of the Day to favourites:', error);
+      });
+    } else {
+      alert('No Quote of the Day to favourite.');
+    }
   });
+  
+  
+})   
   
