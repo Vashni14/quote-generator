@@ -162,32 +162,35 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       // Add the quote of the day to favourites when heart icon is clicked
       // Add the Quote of the Day to favourites when heart icon is clicked
-document.getElementById('heart-icon-quote-of-the-day').addEventListener('click', () => {
-    const quoteOfTheDayText = document.getElementById('quote-of-the-day-text').innerText;
-  
-    if (quoteOfTheDayText) {
-      fetch('http://localhost:8080/api/favourite-quote-of-the-day', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quote: quoteOfTheDayText })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-            
-          alert('Quote of the Day added to favourites!');
+      document.getElementById('heart-icon-quote-of-the-day').addEventListener('click', () => {
+        const quoteOfTheDayText = document.getElementById('quote-of-the-day-text').innerText;
+        
+        // Toggle the 'favourite' class on the heart icon
+        const heartIcon = document.getElementById('heart-icon-quote-of-the-day');
+        heartIcon.classList.toggle('favourite'); // This will add/remove the red color when clicked
+    
+        if (quoteOfTheDayText) {
+          fetch('http://localhost:8080/api/favourite-quote-of-the-day', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quote: quoteOfTheDayText })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              alert('Quote of the Day added to favourites!');
+            } else {
+              alert('Failed to add Quote of the Day to favourites.');
+            }
+          })
+          .catch(error => {
+            console.error('Error adding Quote of the Day to favourites:', error);
+          });
         } else {
-          alert('Failed to add Quote of the Day to favourites.');
+          alert('No Quote of the Day to favourite.');
         }
-      })
-      .catch(error => {
-        console.error('Error adding Quote of the Day to favourites:', error);
-      });
-    } else {
-      alert('No Quote of the Day to favourite.');
-    }
-  });
-  
+    });
+    
   
 })   
   
